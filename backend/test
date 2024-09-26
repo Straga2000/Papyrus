@@ -1,0 +1,96 @@
+<documentation>
+  <block>
+    <name>create_app</name>
+    <type>function</type>
+    <description>Create an instance of Flask application using the given configuration.</description>
+    <arguments>
+      <name>config</name>
+      <type>dict</type>
+    </arguments>
+    <return>Flask</return>
+    <block>None</block>
+  </block>
+  
+  <block>
+    <name)init</name>
+    <type>function</type>
+    <description>Initialize the Flask application with debug mode.</description>
+    <arguments>
+      <name>debug</name>
+      <type>bool</type>
+    </arguments>
+    <return>Flask</return>
+    <block>None</block>
+  </block>
+
+  <block>
+    <name>index</name>
+    <type>method</type>
+    <description>A simple index method returning a "up" message.</description>
+    <block>None</block>
+  </block>
+
+  <block>
+    <name>get_all_projects</name>
+    <type>method</type>
+    <description>Get all projects from the Redis database and return them as JSON data.</description>
+    <arguments>
+      <name>request</name>
+      <type>json</type>
+    </arguments>
+    <return>dict</return>
+    <block>None</block>
+  </block>
+
+  <block>
+    <name>get_project_structure</name>
+    <type>method</type>
+    <description>Get the structure of a project based on its URL.</description>
+    <arguments>
+      <name>request</name>
+      <type>json</type>
+    </arguments>
+    <return>dict</return>
+    <block>None</block>
+  </block>
+
+  <block>
+    <name>get_project</name>
+    <type>method</type>
+    <description>Get the project documentation and return it as JSON data.</description>
+    <arguments>
+      <name>request</name>
+      <type>json</type>
+    </arguments>
+    <return>dict</return>
+    <block>None</block>
+  </block>
+
+  <!-- commented out blocks -->
+  <!--
+  <block>
+    <name>resolve_task</name>
+    <type>method</type>
+    <description>Resolve a task and return the solution as JSON data.</description>
+    <arguments>
+      <name>request</name>
+      <type>json</type>
+    </arguments>
+    <return>dict</return>
+    <block>None</block>
+  </block>
+
+  <block>
+    <name>send_task_as_issue</name>
+    <type>method</type>
+    <description>Send a task as an issue on GitHub.</description>
+    <arguments>
+      <name>request</name>
+      <type>json</type>
+    </arguments>
+    <return>dict</return>
+    <block>None</block>
+  </block>
+
+  -->
+</documentation>

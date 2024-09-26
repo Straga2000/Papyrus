@@ -1,0 +1,1 @@
+from config.celery_conn import task_manager

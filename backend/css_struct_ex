@@ -1,0 +1,17 @@
+<CSSHierarchy>
+    <block name="header" description="The main site header">
+        <element name="header__logo" description="Logo in the header" />
+        <element name="header__nav" description="Navigation in the header">
+            <modifier name="header__nav--vertical" description="Vertical navigation style" />
+        </element>
+    </block>
+    <block name="card" description="A content card">
+        <element name="card__title" description="Title of the card" />
+        <element name="card__content" description="Main content of the card" />
+        <modifier name="card--highlighted" description="Highlighted card for emphasis" />
+    </block>
+    <block name="button" description="Interactive button">
+        <modifier name="button--large" description="A larger button for emphasis" />
+        <modifier name="button--secondary" description="A secondary button style" />
+    </block>
+</CSSHierarchy>

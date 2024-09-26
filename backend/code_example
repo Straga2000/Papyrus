@@ -1,0 +1,14 @@
+from module.file import used_function
+class Example:
+    def __init__(self, arg1, arg2):
+        self.arg1, self.arg2 = arg1, arg2
+
+    def a(self, fst_arg, snd_arg):
+        return fst_arg + snd_arg
+
+
+def example_operation(ex):
+    return ex.a(ex.arg1, ex.arg2)
+
+cls_ex = Example(4, 5)
+print(example_operation(cls_ex))

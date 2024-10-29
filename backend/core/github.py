@@ -1,6 +1,10 @@
 import requests
 from decouple import config
 import re
+
+from helpers.transforms import file2format
+
+
 class Github(object):
     def __init__(self, path, token=""):
         self.token = token
@@ -12,8 +16,10 @@ class Github(object):
     # we should resolve the extractor for the link
     @staticmethod
     def get_args(path):
+        print("this is the given path", path)
         path = path.replace("https://github.com/", "").split("/")
         return path[0], path[1]
+
 
     def get_project(self):
         return f"{self.owner}/{self.repo}"
@@ -40,7 +46,7 @@ class Github(object):
 
         if file["type"] == "file":
             self.file_dict[file["url"]] = file["download_url"]
-            return {"key": file["url"], "type": "str", "name": file.get("name", "")}
+            return {"key": file["url"], "type": "str", "name": file.get("name", ""), "format": file2format(file["url"])}
 
         elif file["type"] == "dir":
             fetched_files = self.get_content(file['url'])
@@ -49,14 +55,6 @@ class Github(object):
             return {"content": elem_list, "key": file['url'], "type": "dict", "name": file.get("name", "")}
         else:
             raise Exception(f"Not a file or dict: {file['type']}")
-
-    # def fetch_files(self, path, content=None):
-    #     # we should save the tree of ids
-    #     if not content:
-    #         content = {
-    #
-    #         }
-
 
 
     def post_issue(self, path, title, body):

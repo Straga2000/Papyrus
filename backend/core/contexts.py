@@ -107,7 +107,8 @@ def get_file_documentation():
                              root=False,
                              item_wrap=False,
                              attr_type=False,
-                             pretty=True).to_xml().replace('<?xml version="1.0" encoding="UTF-8"?>', "")
+                             pretty=False).to_xml()
+    example_block = example_block.decode("utf-8").replace('<?xml version="1.0" encoding="UTF-8"?>', "")
     example_block = f"```xml\n{example_block}```"
 
     code_example = "from module.file import used_function\nclass Example:\n    def __init__(self, arg1, arg2):\n        self.arg1, self.arg2 = arg1, arg2\n\n    def a(self, fst_arg, snd_arg):\n        return fst_arg + snd_arg\n\n\ndef example_operation(ex):\n    return ex.a(ex.arg1, ex.arg2)\n\ncls_ex = Example(4, 5)\nprint(example_operation(cls_ex))"
@@ -125,8 +126,17 @@ def get_file_documentation():
         ("human", f"{code_example}"),
         ("ai", f"{example_block}"),
         ("human", "{input}"),
-        ("ai", "```xml\n")
+        ("ai", "```xml\n<documentation>")
     ]
-
     # sometimes, contexts use a formatter for the input of the context; this context doesnt need any
     return documentation_context, None
+
+def get_file_summary():
+    summary_context = [
+        ("system",
+         "You are an expert writer. Your task is to summarize what the {file_type} file is used for "
+         "and what information contains. The answer should be clear, professional and containing relevant information. Please write the answer in the markdown language."),
+        ("human", "{input}"),
+    ]
+    # sometimes, contexts use a formatter for the input of the context; this context doesnt need any
+    return summary_context, None

@@ -60,7 +60,9 @@ def format2object(format):
     return {"code": code, "language": language, "type": type}
 
 def doc2object(doc, root=True):
+    # TODO update the transformer function
     if root:
+        print("This is the received doc", doc)
         # get the inner info from doc
         doc = doc.get("documentation", {})
 
@@ -86,7 +88,7 @@ def doc2object(doc, root=True):
             arg = [{
                 "name": arg_elem.get("name"),
                 "type": arg_elem.get("type")
-                    } for arg_elem in arg]
+                    } for arg_elem in arg if arg_elem]
         return_val = block.get("return")
 
         # as in blocks, we should transform children into a list (use recursion)
@@ -107,6 +109,12 @@ def doc2object(doc, root=True):
             "children": children
         })
     return modified_blocks
+
+
+def text2chunks(text, max_length=4000):
+    return [
+        text[i : i + max_length] for i in range(0, len(text), max_length)
+    ]
 
 # print(transf_json2xml({
 #     "table": {

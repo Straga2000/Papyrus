@@ -7,4 +7,4 @@ def get_formats(files):
 
 @task_manager.task(ignore_result=False)
 def get_documentation(file):
-    return Documentor.get_file_documentation(file)
+    return Documentor.get_file_content(file)

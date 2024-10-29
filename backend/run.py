@@ -1,21 +1,6 @@
 # from celery import group
 # from tasks.github import get_answer
 #
-# g = group([get_answer.s({
-#     "value1": i,
-#     "value2": i
-# }) for i in range(20)])
-# res = g.apply_async(timeout=100)
-# res.save()
-# res_id = res.id
-#
-# status_list = []
-# while not res.ready():
-#     new_status_list = [c.status for c in res.children]
-#     if new_status_list != status_list:
-#         print(sum([1 if elem == "SUCCESS" else 0 for elem in new_status_list]))
-#         status_list = new_status_list
-# print(*res.get(), sep="\n")
 
 
 # g = group([get_text_file.s(files[key]) for key in files])
@@ -74,6 +59,8 @@
 #     asyncio.run(main())
 
 import json
+from crypt import methods
+
 from decouple import config
 from flask import Flask, request, Response
 from flask_cors import CORS
@@ -109,7 +96,6 @@ def init():
 if __name__ == "__main__":
     app, config = init()
 
-
     @app.route("/")
     def index():
         return "up"
@@ -118,14 +104,9 @@ if __name__ == "__main__":
     @app.route("/project/list/", methods=["GET", "POST"])
     def get_all_projects():
         # to get all projects, they should be put in a true database (eventually)
-        projects = RedisStore.get("projects")
-        project_args_func = lambda x: {"name": x[0], "author": x[1]}
         return {
             "status": True,
-            "projects": [{
-                "url": project,
-                **project_args_func(Github.get_args(project))
-            } for project in projects] if projects else []
+            **Documentor.get_all_projects()
         }
 
 
@@ -133,39 +114,84 @@ if __name__ == "__main__":
     def get_project_structure():
         # get project structure as a task if possible
         url = request.json.get("url")
-
-        pass
-
-
-
-    @app.route("/project/", methods=["GET", "POST"])
-    def get_project():
-        # we need to create documentation
-        # 1. get types of files
-        # 2. read every file from the project
-        # 3. make hierarchy for every file (class, functions, methods, other structures)
-        url = request.json.get("url")
+        print("this is the url")
         try:
-            generated_documentation = doc_gen.generate_documentation(url)
-            print(generated_documentation)
-            projects = RedisStore.get("projects")
-            if projects:
-                projects = list(set([url, *projects]))
-                RedisStore.set("projects", projects)
-            else:
-                RedisStore.set("projects", [url])
+            if not url:
+                raise Exception("No url was given")
 
+            project_structure = Documentor.get_project_structure(url)
+            meta = Documentor.get_project_meta(url)
             return {
                 "status": True,
-                "project": generated_documentation,
-                "name": doc_gen.name,
-                "author": doc_gen.author,
+                **project_structure,
+                **meta
             }
         except Exception as e:
-            print(e)
             return {
-                "status": False
+                "status": False,
+                "error": str(e)
             }
+
+    @app.route("/project/file2format/", methods=["GET", "POST"])
+    def get_files_with_format():
+        url = request.json.get("url")
+        files = Documentor.get_file_with_formats(url)
+        try:
+            # lets do everything in backend (we know we got the structure and the formats, they just need to be combined)
+            return {
+                "status": True,
+                "files": files
+            }
+        except Exception as e:
+            return {
+                "status": False,
+                "error": str(e)
+            }
+
+    @app.route("/project/documentation/", methods=["GET", "POST"])
+    def get_file_documentation():
+        # try:
+        file = request.json.get("file")
+        regenerate = request.json.get("regenerate", False)
+        documentation = Documentor.get_file_content(file, regenerate)
+        return {
+            "status": True,
+            "documentation": documentation
+        }
+        # except Exception as e:
+        #     return {
+        #         "status": False,
+        #         "error": str(e)
+        #     }
+
+    # @app.route("/project/", methods=["GET", "POST"])
+    # def get_project():
+    #     # we need to create documentation
+    #     # 1. get types of files
+    #     # 2. read every file from the project
+    #     # 3. make hierarchy for every file (class, functions, methods, other structures)
+    #     url = request.json.get("url")
+    #     try:
+    #         generated_documentation = Documentor.get_project_structure(url)
+    #         print(generated_documentation)
+    #         projects = RedisStore.get("projects")
+    #         if projects:
+    #             projects = list(set([url, *projects]))
+    #             RedisStore.set("projects", projects)
+    #         else:
+    #             RedisStore.set("projects", [url])
+    #
+    #         return {
+    #             "status": True,
+    #             "project": generated_documentation,
+    #             "name": doc_gen.name,
+    #             "author": doc_gen.author,
+    #         }
+    #     except Exception as e:
+    #         print(e)
+    #         return {
+    #             "status": False
+    #         }
 
 
 
@@ -211,4 +237,4 @@ if __name__ == "__main__":
     #     response_value = github_api.post_issue(project_url, "CodeX suggestion", body_text)
     #     return {"status": response_value}
     #
-    # app.run(debug=True, use_reloader=False, host="0.0.0.0", port=8080)
+app.run(debug=True, use_reloader=False, host="0.0.0.0", port=8080)

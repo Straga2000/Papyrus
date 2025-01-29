@@ -8,4 +8,4 @@ from celery import Celery
 task_manager = Celery('conf',
                       backend='redis://localhost:6379/0',
                       broker='redis://localhost:6379/0',
-                      include=["tasks.github", "tasks.documentor"])
+                      include=["tasks.github", "tasks.documentor"],)

@@ -5,5 +5,3 @@ key_to_delete = redis_instance.keys("format:*")
 for key in key_to_delete:
     redis_instance.delete(key)
     print(f"Key {key} deleted")
-
-# redis_instance.delete("project:structure:Straga2000:IntelliDoc")

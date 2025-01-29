@@ -196,7 +196,13 @@ class Documentor:
                 }
             ])]
 
-            res = llm_image.invoke(multi_context)
+            try:
+                res = llm.invoke(multi_context)
+            except Exception as e:
+                print("Error on describing the image", file)
+                print(e)
+                return {**file, "content": "Error on documenting the file"}
+
             print(f"Result for image description {res}")
 
             obtained_file = {**file, "content": res.content}
@@ -264,38 +270,55 @@ class Documentor:
         documentation_context, _ = get_file_documentation()
         documentation_creator = ChatPromptTemplate.from_messages(documentation_context)
         documentation_creator = documentation_creator | llm
-        res = documentation_creator.invoke({
-            "input": file.get("content"),
-            "file_type": file.get("type")
-        })
-        # remove the bits and pieces of the answer format
-        res = "<documentation>" + res.content
-        res = res.split("```")[0]
-        res = res.replace('<?xml version="1.0" encoding="UTF-8"?>', "")
-        print("This is the original response", res)
 
-        try:
-            res_json = transf_xml2json(res)
-        except Exception as e:
-            print("Cannot transform to json", res)
-            return {"content", res}
+        # we should split the content in chunks to resolve the problem of content not being correctly manipulated
+        file_chunks = text2chunks(file.get("content"), max_length=8000)
+        doc_chunks = []
+        for idx, chunk in enumerate(file_chunks):
+            print(f"{idx}. Chunk")
+            res = documentation_creator.invoke({
+                "input": chunk,
+                "file_type": file.get("type")
+            })
+            # remove the bits and pieces of the answer format
+            res = "<documentation>" + res.content
+            res = res.split("```")[0]
+            res = res.replace('<?xml version="1.0" encoding="UTF-8"?>', "")
+            print("This is the original response", res)
+            try:
+                res_json = transf_xml2json(res)
+            except Exception as e:
+                print("Error", e)
+                print("Cannot transform to json", res)
+                doc_chunks.append(res)
+                continue
 
-        try:
-            documentation = doc2object(res_json)
-        except Exception as e:
-            return {"content": res_json}
-        #TODO save a short description of the file based on the concat of blocks for chroma so we can use the in tasks
-        return {"content": documentation}
+            try:
+                documentation = doc2object(res_json)
+                doc_chunks.append(documentation)
+                print("This is the final documentation", documentation)
+            except Exception as e:
+                print("Error", e)
+                print("Cannot transform json to object", res_json)
+                doc_chunks.append(res_json)
+                continue
+
+        return {"content": doc_chunks}
+
 
     @staticmethod
     def get_file_summary(file):
-        summary_context, _ = get_file_summary()
-        summary_creator = ChatPromptTemplate.from_messages(summary_context)
-        summary_creator = summary_creator | llm
-        res = summary_creator.invoke({
-            "input": file.get("content"),
-            "file_type": file.get("type")
-        })
+        try:
+            summary_context, _ = get_file_summary()
+            summary_creator = ChatPromptTemplate.from_messages(summary_context)
+            summary_creator = summary_creator | llm
+            res = summary_creator.invoke({
+                "input": file.get("content"),
+                "file_type": file.get("type")
+            })
+        except Exception as e:
+            print("Error on getting file summary", file)
+            print(e)
         # we know that the file contains text, we just need a simple summary for the file
         return {"content": res.content}
 

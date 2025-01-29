@@ -1,16 +1,124 @@
-import java.util.Scanner; // Import the Scanner class
+class PharmacyTemplate
+{
+private:
+    const char *name;
+    int employees;
+    vector <float> revenue;
 
-class MyClass {
-  public static void main(String[] args) {
-    int x, y, sum;
-    Scanner myObj = new Scanner(System.in); // Create a Scanner object
-    System.out.println("Type a number:");
-    x = myObj.nextInt(); // Read user input
+    const int id;
+    static int counter;
 
-    System.out.println("Type another number:");
-    y = myObj.nextInt(); // Read user input
+public:
 
-    sum = x + y;  // Calculate the sum of x + y
-    System.out.println("Sum is: " + sum); // Print the sum
-  }
+    PharmacyTemplate(const char*, int, vector <float>);
+    PharmacyTemplate();
+    PharmacyTemplate(const PharmacyTemplate&);
+
+    operator =(const PharmacyTemplate&);
+
+    void set_name(char* newName)
+    {
+        name = newName;
+    }
+
+    void set_employees(int employ)
+    {
+        employees = employ;
+    }
+
+    void set_revenue(vector <float> income)
+    {
+        revenue = income;
+    }
+
+    void update_revenue(float value)
+    {
+        revenue.push_back(value);
+    }
+
+    const char *get_name()
+    {
+        return name;
+    }
+
+    int get_employees()
+    {
+        return employees;
+    }
+
+    vector<float> get_revenue()
+    {
+        return revenue;
+    }
+
+    int get_id()
+    {
+        return id;
+    }
+
+    static int get_next_id()
+    {
+        return counter;
+    }
+
+    virtual void print_pharmacy(ostream &) = 0;
+
+    friend ostream& operator <<(ostream &output, PharmacyTemplate& p)
+    {
+        p.print_pharmacy(output);
+        return output;
+    }
+
+
+    friend istream& operator >>(istream &input, PharmacyTemplate& p)
+    {
+        char *name = new char[NAMELENGTH];
+        int employees;
+
+        input.get(name, NAMELENGTH);
+        input>>employees;
+
+
+        p.set_name(name);
+        p.set_employees(employees);
+
+        int n; input>>n;
+
+        try
+        {
+            if(n == 0)
+                throw(NEGATIVEERROR);
+
+            float value = 0;
+            for(int i = 0; i < n; i++)
+            {
+                input>>value;
+                p.update_revenue(value);
+            }
+        }
+        catch(int a)
+        {
+            throw(a);
+        }
+
+        return input;
+    }
+
+    virtual ~PharmacyTemplate()
+    {
+        counter--;
+    }
+};
+int PharmacyTemplate::counter = 0;
+
+void PharmacyTemplate::print_pharmacy(ostream &output)
+{
+    output<<"Farmaciei este "<<get_name()<<". ";
+    output<<"Are "<<get_employees()<<" angajati. ";
+    output<<"Venituri lunare ale companiei sunt: ";
+
+    vector <float> income = get_revenue();
+    for(int i = 0; i < income.size(); i++)
+        output<<income[i]<<" lei ";
+    output<<"\n";
 }

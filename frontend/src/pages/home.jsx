@@ -75,6 +75,7 @@ const Home = () => {
             }
         ).then((response) => {
             console.log("List of projects", response.data)
+            console.log("Available projects: ", response.data.projects)
             setProjectList([...response.data.projects])
         })
     }
@@ -169,27 +170,29 @@ const Home = () => {
                                                 <LinearProgress color="secondary"/>
                                             </>
                                         }
-                                        <TableContainer component={Paper} elevation={3}>
-                                            <Table aria-label="simple table">
-                                                <TableHead>
-                                                    <TableRow>
-                                                        <TableCell>
-                                                            <h3 style={{"margin": 0}}>
-                                                                Author
-                                                            </h3>
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <h3 style={{"margin": 0}}>
-                                                                Project
-                                                            </h3>
-                                                        </TableCell>
-                                                        <TableCell align={"right"}>
-                                                            {/*<ChevronRight color="secondary"/>*/}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                </TableHead>
-                                                <TableBody>
-                                                    {projectList.map((item) => <TableRow key={item.url}>
+                                        {
+                                            !!projectList &&
+                                            <TableContainer component={Paper} elevation={3}>
+                                                <Table aria-label="simple table">
+                                                    <TableHead>
+                                                        <TableRow>
+                                                            <TableCell>
+                                                                <h3 style={{"margin": 0}}>
+                                                                    Author
+                                                                </h3>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <h3 style={{"margin": 0}}>
+                                                                    Project
+                                                                </h3>
+                                                            </TableCell>
+                                                            <TableCell align={"right"}>
+                                                                {/*<ChevronRight color="secondary"/>*/}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {projectList.map((item) => <TableRow key={item.url}>
                                                             <TableCell sx={{border: 0}}>{item.author}</TableCell>
                                                             <TableCell sx={{border: 0}}>
                                                                 <Typography component="a" color="secondary" href={item.url}>
@@ -204,26 +207,28 @@ const Home = () => {
                                                                     <ChevronRight/>
                                                                 </IconButton>
                                                             </TableCell>
-                                                    </TableRow>)}
-                                                </TableBody>
-                                                {/*<TableBody>*/}
-                                                {/*    {rows.map((row) => (*/}
-                                                {/*        <TableRow*/}
-                                                {/*            key={row.name}*/}
-                                                {/*            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}*/}
-                                                {/*        >*/}
-                                                {/*            <TableCell component="th" scope="row">*/}
-                                                {/*                {row.name}*/}
-                                                {/*            </TableCell>*/}
-                                                {/*            <TableCell align="right">{row.calories}</TableCell>*/}
-                                                {/*            <TableCell align="right">{row.fat}</TableCell>*/}
-                                                {/*            <TableCell align="right">{row.carbs}</TableCell>*/}
-                                                {/*            <TableCell align="right">{row.protein}</TableCell>*/}
-                                                {/*        </TableRow>*/}
-                                                {/*    ))}*/}
-                                                {/*</TableBody>*/}
-                                            </Table>
-                                        </TableContainer>
+                                                        </TableRow>)}
+                                                    </TableBody>
+                                                    {/*<TableBody>*/}
+                                                    {/*    {rows.map((row) => (*/}
+                                                    {/*        <TableRow*/}
+                                                    {/*            key={row.name}*/}
+                                                    {/*            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}*/}
+                                                    {/*        >*/}
+                                                    {/*            <TableCell component="th" scope="row">*/}
+                                                    {/*                {row.name}*/}
+                                                    {/*            </TableCell>*/}
+                                                    {/*            <TableCell align="right">{row.calories}</TableCell>*/}
+                                                    {/*            <TableCell align="right">{row.fat}</TableCell>*/}
+                                                    {/*            <TableCell align="right">{row.carbs}</TableCell>*/}
+                                                    {/*            <TableCell align="right">{row.protein}</TableCell>*/}
+                                                    {/*        </TableRow>*/}
+                                                    {/*    ))}*/}
+                                                    {/*</TableBody>*/}
+                                                </Table>
+                                            </TableContainer>
+
+                                        }
 
 
                                         {/*<List>*/}
